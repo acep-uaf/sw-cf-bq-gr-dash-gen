@@ -33,9 +33,15 @@ def mk_gr_dsh(event, context):
         # get the JSON template file
         storage_client = storage.Client()
         template_bucket = storage_client.get_bucket(os.getenv('TEMPLATE_BUCKET'))
+        blob = template_bucket.blob(os.getenv('TEMPLATE_JSON'))
+        json_template = json.loads(blob.download_as_text())
 
         print(f'template bucket: {template_bucket}')
+        print(f'template file: {blob}')
+        #print(f'template: {json_template}')
         logging.info(f'template bucket: {template_bucket}')
+        logging.info(f'template file: {blob}')
+        #logging.info(f'template file: {json_template}')
 
 
     except Forbidden as e:
