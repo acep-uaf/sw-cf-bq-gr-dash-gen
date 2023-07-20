@@ -44,11 +44,11 @@ def mk_gr_dsh(event, context):
         archive_bucket = storage_client.get_bucket(os.getenv('ARCHIVE_BUCKET'))
         print(f'archive bucket: {archive_bucket}')
         archive_blob = archive_bucket.blob(dataset_id + '.json')  # used a new variable name
-        archive_blob.upload_from_string(json.dumps(json_template))  # used the new variable
+        archive_blob.upload_from_string(json.dumps(json_template, indent=4))  # used the new variable
 
         # Convert dictionary to JSON string and print it
-        json_string = json.dumps(json_template, indent=4)
-        print(json_string)
+        #json_string = json.dumps(json_template, indent=4)
+        #print(json_string)
 
 
     except Forbidden as e:
