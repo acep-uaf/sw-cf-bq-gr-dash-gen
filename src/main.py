@@ -7,7 +7,6 @@ import os
 
 def mk_gr_dsh(event, context):
     print(f'Received event: {event}')  
-    logging.info(f'Received event: {event}')
 
     try:
         pubsub_message = base64.b64decode(event['data']).decode('utf-8')
@@ -24,11 +23,8 @@ def mk_gr_dsh(event, context):
         #payload = f'{project_id}.{dataset_id}.{table_id}'
 
         print(f'project id: {project_id}')
-        logging.info(f'project id: {project_id}')
         print(f'dataset id: {dataset_id}')
-        logging.info(f'dataset id: {dataset_id}')
         print(f'table id: {table_id}')
-        logging.info(f'table id: {table_id}')
 
         # get the JSON template file
         storage_client = storage.Client()
@@ -38,10 +34,16 @@ def mk_gr_dsh(event, context):
 
         print(f'template bucket: {template_bucket}')
         print(f'template file: {blob}')
-        #print(f'template: {json_template}')
-        logging.info(f'template bucket: {template_bucket}')
-        logging.info(f'template file: {blob}')
-        #logging.info(f'template file: {json_template}')
+        for panel in json_template['panels']:
+            for target in panel['targets']:
+                if 'rawSql' in target:
+                    target['rawSql'] = target['rawSql'].replace('data_set', dataset_id)
+
+
+
+        # Convert dictionary to JSON string and print it
+        json_string = json.dumps(json_template, indent=4)
+        print(json_string)
 
 
     except Forbidden as e:
