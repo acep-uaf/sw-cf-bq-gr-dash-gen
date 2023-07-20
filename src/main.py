@@ -38,7 +38,7 @@ def mk_gr_dsh(event, context):
         for panel in json_template['panels']:
             for target in panel['targets']:
                 if 'rawSql' in target:
-                    target['rawSql'] = target['rawSql'].replace('data_set', dataset_id)
+                    target['rawSql'] = target['rawSql'].replace('dataset_id_place_holder', dataset_id)
 
         # write the updated JSON to a new Cloud Storage bucket
         archive_bucket = storage_client.get_bucket(os.getenv('ARCHIVE_BUCKET'))
