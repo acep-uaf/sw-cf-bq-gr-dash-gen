@@ -29,17 +29,22 @@ def mk_gr_dsh(event, context):
         # get the JSON template file
         storage_client = storage.Client()
         template_bucket = storage_client.get_bucket(os.getenv('TEMPLATE_BUCKET'))
-        blob = template_bucket.blob(os.getenv('TEMPLATE_JSON'))
-        json_template = json.loads(blob.download_as_text())
+        template_blob = template_bucket.blob(os.getenv('TEMPLATE_JSON'))  # renamed variable
+        json_template = json.loads(template_blob.download_as_text())  # used renamed variable
 
         print(f'template bucket: {template_bucket}')
-        print(f'template file: {blob}')
+        print(f'template file: {template_blob}')
+
         for panel in json_template['panels']:
             for target in panel['targets']:
                 if 'rawSql' in target:
                     target['rawSql'] = target['rawSql'].replace('data_set', dataset_id)
 
-
+        # write the updated JSON to a new Cloud Storage bucket
+        archive_bucket = storage_client.get_bucket(os.getenv('ARCHIVE_BUCKET'))
+        print(f'archive bucket: {archive_bucket}')
+        archive_blob = archive_bucket.blob(dataset_id + '.json')  # used a new variable name
+        archive_blob.upload_from_string(json.dumps(json_template))  # used the new variable
 
         # Convert dictionary to JSON string and print it
         json_string = json.dumps(json_template, indent=4)
