@@ -1,6 +1,5 @@
 from google.api_core.exceptions import Forbidden, BadRequest, GoogleAPICallError
-from google.cloud import pubsub_v1, storage
-import logging
+from google.cloud import bigquery, storage
 import base64
 import json
 import os
