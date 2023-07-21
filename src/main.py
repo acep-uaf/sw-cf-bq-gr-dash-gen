@@ -25,6 +25,54 @@ def mk_gr_dsh(event, context):
         print(f'dataset id: {dataset_id}')
         print(f'table id: {table_id}')
 
+        # New BigQuery client
+        client = bigquery.Client(project=project_id)
+
+        bigquery_uri = f'{project_id}.{dataset_id}.{table_id}'
+
+        # Define the query to get the first and last dates after transformations
+        query = f"""
+        SELECT 
+            MIN(TIMESTAMP_ADD(
+                TIMESTAMP(
+                    PARSE_DATETIME(
+                        '%Y/%m/%d %I:%M:%S %p', 
+                        CASE
+                            WHEN t.datetime NOT LIKE '20%/%' THEN t.measurement_name
+                            WHEN t.measurement_name LIKE '20%/%' THEN t.measurement_name
+                            ELSE t.datetime
+                        END
+                    )
+                ),
+                INTERVAL CAST(t.millis AS INT64) MILLISECOND
+            )) AS min_date, 
+            MAX(TIMESTAMP_ADD(
+                TIMESTAMP(
+                    PARSE_DATETIME(
+                        '%Y/%m/%d %I:%M:%S %p', 
+                        CASE
+                            WHEN t.datetime NOT LIKE '20%/%' THEN t.measurement_name
+                            WHEN t.measurement_name LIKE '20%/%' THEN t.measurement_name
+                            ELSE t.datetime
+                        END
+                    )
+                ),
+                INTERVAL CAST(t.millis AS INT64) MILLISECOND
+            )) AS max_date
+        FROM `{bigquery_uri}` t;
+        """
+
+        # Run the query
+        query_job = client.query(query)
+        result = query_job.result()  # Wait for the job to finish
+
+        for row in result:
+            min_date = row.min_date
+            max_date = row.max_date
+
+        print(f'Min date: {min_date}')
+        print(f'Max date: {max_date}')
+
         # get the JSON template file
         storage_client = storage.Client()
         template_bucket = storage_client.get_bucket(os.getenv('TEMPLATE_BUCKET'))
