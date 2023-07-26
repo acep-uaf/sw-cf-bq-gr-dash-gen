@@ -18,6 +18,12 @@ def mk_gr_dsh(event, context):
         if not all([project_id, dataset_id, table_id]):
             print('Error: Missing necessary parameters in the message.')
             return
+        
+        bigquery_uri = f'{project_id}.{dataset_id}.{table_id}'
+
+        print(f'BigQuery URI: {bigquery_uri}')
+
+        #client = bigquery.Client(project=project_id)
 
         #payload = f'{project_id}.{dataset_id}.{table_id}'
 
