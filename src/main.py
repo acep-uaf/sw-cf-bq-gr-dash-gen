@@ -25,36 +25,6 @@ def mk_gr_dsh(event, context):
         print(f'dataset id: {dataset_id}')
         print(f'table id: {table_id}')
 
-        # New BigQuery client
-        client = bigquery.Client(project=project_id)
-
-        bigquery_uri = f'{project_id}.{dataset_id}.{table_id}'
-
-        query = f"""
-        SELECT 
-            MAX(DATE(TIMESTAMP(
-                PARSE_DATETIME(
-                    '%Y/%m/%d %I:%M:%S %p', 
-                    CASE
-                        WHEN t.datetime NOT LIKE '20%/%' THEN t.measurement_name
-                        WHEN t.measurement_name LIKE '20%/%' THEN t.measurement_name
-                        ELSE t.datetime
-                    END
-                )
-            ))) AS max_date
-        FROM `{bigquery_uri}` t;
-        """
-
-        # Run the query
-        query_job = client.query(query)
-        result = query_job.result()  # Wait for the job to finish
-
-        for row in result:
-            max_date = row.max_date
-
-        print(f'Max date: {max_date}')
-
-
         # get the JSON template file
         storage_client = storage.Client()
         template_bucket = storage_client.get_bucket(os.getenv('TEMPLATE_BUCKET'))
@@ -68,6 +38,13 @@ def mk_gr_dsh(event, context):
             for target in panel['targets']:
                 if 'rawSql' in target:
                     target['rawSql'] = target['rawSql'].replace('dataset_id_place_holder', dataset_id)
+
+        json_date = dataset_id.replace("_", "-") # 'yyyy-mm-dd' format
+        
+        # Set time range and title in the template
+        json_template['time']['from'] = json_date + 'T09:00:00.000Z'
+        json_template['time']['to'] = json_date + 'T09:59:59.000Z'
+        json_template['title'] = 'SW Grid Base Line - VT&D - Bus B ' + json_date
 
         # write the updated JSON to a new Cloud Storage bucket
         archive_bucket = storage_client.get_bucket(os.getenv('ARCHIVE_BUCKET'))
