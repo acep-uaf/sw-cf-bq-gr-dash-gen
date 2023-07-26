@@ -15,6 +15,10 @@ def mk_gr_dsh(event, context):
         dataset_id = message_dict.get('dataset_id')
         table_id = message_dict.get('table_id')
 
+        print(f'project id: {project_id}')
+        print(f'dataset id: {dataset_id}')
+        print(f'table id: {table_id}')
+
         if not all([project_id, dataset_id, table_id]):
             print('Error: Missing necessary parameters in the message.')
             return
@@ -23,13 +27,62 @@ def mk_gr_dsh(event, context):
 
         print(f'BigQuery URI: {bigquery_uri}')
 
-        #client = bigquery.Client(project=project_id)
+        client = bigquery.Client(project=project_id)
 
-        #payload = f'{project_id}.{dataset_id}.{table_id}'
+        # Define the query
+        query = f"""
+        WITH 
+        measurement_names AS (
+        SELECT column_name
+        FROM UNNEST([
+            'DT1-B_VAB', 'DT1-B_VBC', 'DT1-B_VCA',
+            'DT2-B_VAB', 'DT2-B_VBC', 'DT2-B_VCA',
+            'DT3-B_VAB', 'DT3-B_VBC', 'DT3-B_VCA',
+            'GVEA-B_VAB', 'GVEA-B_VBC', 'GVEA-B_VCA',
+            'G3-B_VAB', 'G3-B_VBC', 'G3-B_VCA',
+            'G5-B_VAB', 'G5-B_VBC', 'G5-B_VCA',
+            'GVEA-B_Frequency',
+            'DT1-B_IA', 'DT1-B_IB', 'DT1-B_IC'
+        ]) AS column_name
+        ),
+        time_series AS (
+        SELECT TIMESTAMP_TRUNC(t, HOUR) as ts_datetime
+        FROM UNNEST(GENERATE_TIMESTAMP_ARRAY(
+            (SELECT MIN(TIMESTAMP(datetime)) FROM `{bigquery_uri}`), 
+            (SELECT MAX(TIMESTAMP(datetime)) FROM `{bigquery_uri}`), 
+            INTERVAL 1 HOUR)) t
+        ),
+        data AS (
+        SELECT
+            TIMESTAMP_TRUNC(TIMESTAMP(datetime), HOUR) as data_datetime,
+            measurement_name,
+            COUNT(1) as count
+        FROM `acep-ext-eielson-2021.2022_11_11.vtndpp`
+        WHERE measurement_name IN (SELECT column_name FROM measurement_names)
+        GROUP BY 1, 2
+        ),
+        min_counts AS (
+        SELECT data_datetime, MIN(count) as min_count
+        FROM data
+        GROUP BY data_datetime
+        )
+        SELECT ts.ts_datetime, mc.min_count
+        FROM time_series ts
+        JOIN min_counts mc
+        ON ts.ts_datetime = mc.data_datetime
+        WHERE mc.min_count >= 3000
+        ORDER BY ts.ts_datetime ASC
+        LIMIT 5
+        """
+        # Run the query
+        query_job = client.query(query)
+        #query_job.result()  # Wait for the job to finish
+        result = query_job.result()  # Wait for the job to finish
 
-        print(f'project id: {project_id}')
-        print(f'dataset id: {dataset_id}')
-        print(f'table id: {table_id}')
+        # Iterate over the rows in the query result
+        for row in result:
+            print(f'{row.ts_datetime}, {row.min_count}')
+
 
         # get the JSON template file
         storage_client = storage.Client()
