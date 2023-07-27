@@ -79,9 +79,25 @@ def mk_gr_dsh(event, context):
         #query_job.result()  # Wait for the job to finish
         result = query_job.result()  # Wait for the job to finish
 
+
+        # Define a variable to keep the first timestamp
+        first_ts = None
+
         # Iterate over the rows in the query result
         for row in result:
             print(f'{row.ts_datetime}, {row.min_count}')
+            
+            # If first_ts is None, set it to the current timestamp
+            if first_ts is None:
+                first_ts = row.ts_datetime
+
+        # Convert first_ts to a string in 'yyyy-mm-ddTHH:MM:SS.000Z' format
+        first_ts_str = first_ts.strftime('%Y-%m-%dT%H:%M:%S.000Z')
+
+        # Replace "-" with "_" in the date part
+        first_ts_str = first_ts_str.replace("-", "_", 2)
+
+        print(f'first TS sting formatted: {first_ts_str}')
 
 
         # get the JSON template file
