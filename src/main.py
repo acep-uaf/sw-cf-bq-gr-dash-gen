@@ -1,5 +1,6 @@
 from google.api_core.exceptions import Forbidden, BadRequest, GoogleAPICallError
 from google.cloud import bigquery, storage
+import datetime
 import base64
 import json
 import os
@@ -79,7 +80,6 @@ def mk_gr_dsh(event, context):
         #query_job.result()  # Wait for the job to finish
         result = query_job.result()  # Wait for the job to finish
 
-
         # Define a variable to keep the first timestamp
         first_ts = None
 
@@ -99,7 +99,6 @@ def mk_gr_dsh(event, context):
 
         print(f'first TS sting formatted: {first_ts_str}')
 
-
         # get the JSON template file
         storage_client = storage.Client()
         template_bucket = storage_client.get_bucket(os.getenv('TEMPLATE_BUCKET'))
@@ -117,8 +116,11 @@ def mk_gr_dsh(event, context):
         json_date = dataset_id.replace("_", "-") # 'yyyy-mm-dd' format
         
         # Set time range and title in the template
-        json_template['time']['from'] = json_date + 'T09:00:00.000Z'
-        json_template['time']['to'] = json_date + 'T09:59:59.000Z'
+        # Set time range in the template
+        json_template['time']['from'] = first_ts_str
+        json_template['time']['to'] = (first_ts + datetime.timedelta(hours=1)).strftime('%Y_%m_%dT%H:%M:%S.000Z')
+        #json_template['time']['from'] = json_date + 'T09:00:00.000Z'
+        #json_template['time']['to'] = json_date + 'T09:59:59.000Z'
         json_template['title'] = 'SW Grid Base Line - VT&D - Bus B ' + json_date
 
         # write the updated JSON to a new Cloud Storage bucket
@@ -127,9 +129,6 @@ def mk_gr_dsh(event, context):
         archive_blob = archive_bucket.blob(dataset_id + '.json')  # used a new variable name
         archive_blob.upload_from_string(json.dumps(json_template, indent=4))  # used the new variable
 
-        # Convert dictionary to JSON string and print it
-        #json_string = json.dumps(json_template, indent=4)
-        #print(json_string)
 
 
     except Forbidden as e:
