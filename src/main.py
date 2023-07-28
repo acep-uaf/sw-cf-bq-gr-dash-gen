@@ -1,6 +1,8 @@
 from google.api_core.exceptions import Forbidden, BadRequest, GoogleAPICallError
 from google.cloud import bigquery, storage
-import datetime
+#import datetime
+from datetime import datetime, timedelta
+
 import base64
 import json
 import os
@@ -32,46 +34,114 @@ def mk_gr_dsh(event, context):
 
         # Define the query
         query = f"""
-        WITH 
-        measurement_names AS (
-        SELECT column_name
-        FROM UNNEST([
-            'DT1-B_VAB', 'DT1-B_VBC', 'DT1-B_VCA',
-            'DT2-B_VAB', 'DT2-B_VBC', 'DT2-B_VCA',
-            'DT3-B_VAB', 'DT3-B_VBC', 'DT3-B_VCA',
-            'GVEA-B_VAB', 'GVEA-B_VBC', 'GVEA-B_VCA',
-            'G3-B_VAB', 'G3-B_VBC', 'G3-B_VCA',
-            'G5-B_VAB', 'G5-B_VBC', 'G5-B_VCA',
-            'GVEA-B_Frequency',
-            'DT1-B_IA', 'DT1-B_IB', 'DT1-B_IC'
-        ]) AS column_name
-        ),
-        time_series AS (
+        WITH time_series AS (
         SELECT TIMESTAMP_TRUNC(t, HOUR) as ts_datetime
-        FROM UNNEST(GENERATE_TIMESTAMP_ARRAY(
-            (SELECT MIN(TIMESTAMP(datetime)) FROM `{bigquery_uri}`), 
-            (SELECT MAX(TIMESTAMP(datetime)) FROM `{bigquery_uri}`), 
-            INTERVAL 1 HOUR)) t
+        FROM UNNEST(GENERATE_TIMESTAMP_ARRAY((SELECT MIN(TIMESTAMP(datetime)) FROM `acep-ext-eielson-2021.2022_11_11.vtndpp`), (SELECT MAX(TIMESTAMP(datetime)) FROM `acep-ext-eielson-2021.2022_11_11.vtndpp`), INTERVAL 1 HOUR)) t
         ),
         data AS (
         SELECT
             TIMESTAMP_TRUNC(TIMESTAMP(datetime), HOUR) as data_datetime,
-            measurement_name,
-            COUNT(1) as count
+            COUNTIF(measurement_name = 'DT1-B_VAB') AS DT1_B_VAB_count,
+            COUNTIF(measurement_name = 'DT1-B_VBC') AS DT1_B_VBC_count,
+            COUNTIF(measurement_name = 'DT1-B_VCA') AS DT1_B_VCA_count,
+            COUNTIF(measurement_name = 'DT2-B_VAB') AS DT2_B_VAB_count,
+            COUNTIF(measurement_name = 'DT2-B_VBC') AS DT2_B_VBC_count,
+            COUNTIF(measurement_name = 'DT2-B_VCA') AS DT2_B_VCA_count,
+            COUNTIF(measurement_name = 'DT3-B_VAB') AS DT3_B_VAB_count,
+            COUNTIF(measurement_name = 'DT3-B_VBC') AS DT3_B_VBC_count,
+            COUNTIF(measurement_name = 'DT3-B_VCA') AS DT3_B_VCA_count,
+            COUNTIF(measurement_name = 'GVEA-B_VAB') AS GVEA_B_VAB_count,
+            COUNTIF(measurement_name = 'GVEA-B_VBC') AS GVEA_B_VBC_count,
+            COUNTIF(measurement_name = 'GVEA-B_VCA') AS GVEA_B_VCA_count,
+            COUNTIF(measurement_name = 'G3-B_VAB') AS G3_B_VAB_count,
+            COUNTIF(measurement_name = 'G3-B_VBC') AS G3_B_VBC_count,
+            COUNTIF(measurement_name = 'G3-B_VCA') AS G3_B_VCA_count,
+            COUNTIF(measurement_name = 'G5-B_VAB') AS G5_B_VAB_count,
+            COUNTIF(measurement_name = 'G5-B_VBC') AS G5_B_VBC_count,
+            COUNTIF(measurement_name = 'G5-B_VCA') AS G5_B_VCA_count,
+            COUNTIF(measurement_name = 'GVEA-B_Frequency') AS GVEA_B_Frequency_count,
+            COUNTIF(measurement_name = 'DT1-B_IA') AS DT1_B_IA_count,
+            COUNTIF(measurement_name = 'DT1-B_IB') AS DT1_B_IB_count,
+            COUNTIF(measurement_name = 'DT1-B_IC') AS DT1_B_IC_count,
+            COUNTIF(measurement_name = 'DT2-B_IA') AS DT2_B_IA_count,
+            COUNTIF(measurement_name = 'DT2-B_IB') AS DT2_B_IB_count,
+            COUNTIF(measurement_name = 'DT2-B_IC') AS DT2_B_IC_count,
+            COUNTIF(measurement_name = 'DT3-B_IA') AS DT3_B_IA_count,
+            COUNTIF(measurement_name = 'DT3-B_IB') AS DT3_B_IB_count,
+            COUNTIF(measurement_name = 'DT3-B_IC') AS DT3_B_IC_count,
+            COUNTIF(measurement_name = 'GVEA-B_IA') AS GVEA_B_IA_count,
+            COUNTIF(measurement_name = 'GVEA-B_IB') AS GVEA_B_IB_count,
+            COUNTIF(measurement_name = 'GVEA-B_IC') AS GVEA_B_IC_count,
+            COUNTIF(measurement_name = 'G3-B_IA') AS G3_B_IA_count,
+            COUNTIF(measurement_name = 'G3-B_IB') AS G3_B_IB_count,
+            COUNTIF(measurement_name = 'G3-B_IC') AS G3_B_IC_count,
+            COUNTIF(measurement_name = 'G5-B_IA') AS G5_B_IA_count,
+            COUNTIF(measurement_name = 'G5-B_IB') AS G5_B_IB_count,
+            COUNTIF(measurement_name = 'G5-B_IC') AS G5_B_IC_count,
+            COUNTIF(measurement_name = 'DT1-B_VA_A') AS DT1_B_VA_A_count,
+            COUNTIF(measurement_name = 'DT1-B_VA_C') AS DT1_B_VA_C_count,
+            COUNTIF(measurement_name = 'DT2-B_VA_A') AS DT2_B_VA_A_count,
+            COUNTIF(measurement_name = 'DT2-B_VA_C') AS DT2_B_VA_C_count,
+            COUNTIF(measurement_name = 'DT3-B_VA_A') AS DT3_B_VA_A_count,
+            COUNTIF(measurement_name = 'DT3-B_VA_C') AS DT3_B_VA_C_count,
+            COUNTIF(measurement_name = 'DT1-B_W_Total') AS DT1_B_W_Total_count,
+            COUNTIF(measurement_name = 'DT2-B_W_Total') AS DT2_B_W_Total_count,
+            COUNTIF(measurement_name = 'DT3-B_W_Total') AS DT3_B_W_Total_count
+
+            
+            
         FROM `acep-ext-eielson-2021.2022_11_11.vtndpp`
-        WHERE measurement_name IN (SELECT column_name FROM measurement_names)
-        GROUP BY 1, 2
-        ),
-        min_counts AS (
-        SELECT data_datetime, MIN(count) as min_count
-        FROM data
-        GROUP BY data_datetime
+        GROUP BY 1
         )
-        SELECT ts.ts_datetime, mc.min_count
+        SELECT *
         FROM time_series ts
-        JOIN min_counts mc
-        ON ts.ts_datetime = mc.data_datetime
-        WHERE mc.min_count >= 3000
+        LEFT JOIN data d
+        ON ts.ts_datetime = d.data_datetime
+        WHERE DT1_B_VAB_count >= 3000
+        AND DT1_B_VBC_count >= 3000
+        AND DT1_B_VCA_count >= 3000
+        AND DT2_B_VAB_count >= 3000
+        AND DT2_B_VBC_count >= 3000
+        AND DT2_B_VCA_count >= 3000
+        AND DT3_B_VAB_count >= 3000
+        AND DT3_B_VBC_count >= 3000
+        AND DT3_B_VCA_count >= 3000
+        AND GVEA_B_VAB_count >= 3000
+        AND GVEA_B_VBC_count >= 3000
+        AND GVEA_B_VCA_count >= 3000
+        AND G3_B_VAB_count >= 3000
+        AND G3_B_VBC_count >= 3000
+        AND G3_B_VCA_count >= 3000
+        AND G5_B_VAB_count >= 3000
+        AND G5_B_VBC_count >= 3000
+        AND G5_B_VCA_count >= 3000
+        AND GVEA_B_Frequency_count >= 3000
+        AND DT1_B_IA_count >= 3000
+        AND DT1_B_IB_count >= 3000
+        AND DT1_B_IC_count >= 3000
+        AND DT2_B_IA_count >= 3000
+        AND DT2_B_IB_count >= 3000
+        AND DT2_B_IC_count >= 3000
+        AND DT3_B_IA_count >= 3000
+        AND DT3_B_IB_count >= 3000
+        AND DT3_B_IC_count >= 3000
+        AND GVEA_B_IA_count >= 3000
+        AND GVEA_B_IB_count >= 3000
+        AND GVEA_B_IC_count >= 3000
+        AND G3_B_IA_count >= 3000
+        AND G3_B_IB_count >= 3000
+        AND G3_B_IC_count >= 3000
+        AND G5_B_IA_count >= 3000
+        AND G5_B_IB_count >= 3000
+        AND G5_B_IC_count >= 3000
+        AND DT1_B_VA_A_count >= 800
+        AND DT1_B_VA_C_count >= 800 
+        AND DT2_B_VA_A_count >= 800
+        AND DT2_B_VA_C_count >= 800
+        AND DT3_B_VA_A_count >= 800
+        AND DT3_B_VA_C_count >= 800
+        AND DT1_B_W_Total_count >= 800
+        AND DT2_B_W_Total_count >= 800
         ORDER BY ts.ts_datetime ASC
         LIMIT 5
         """
@@ -85,7 +155,7 @@ def mk_gr_dsh(event, context):
 
         # Iterate over the rows in the query result
         for row in result:
-            print(f'{row.ts_datetime}, {row.min_count}')
+            print(f'{row.ts_datetime}')
             
             # If first_ts is None, set it to the current timestamp
             if first_ts is None:
@@ -93,9 +163,6 @@ def mk_gr_dsh(event, context):
 
         # Convert first_ts to a string in 'yyyy-mm-ddTHH:MM:SS.000Z' format
         first_ts_str = first_ts.strftime('%Y-%m-%dT%H:%M:%S.000Z')
-
-        # Replace "-" with "_" in the date part
-        first_ts_str = first_ts_str.replace("-", "_", 2)
 
         print(f'first TS sting formatted: {first_ts_str}')
 
@@ -118,7 +185,7 @@ def mk_gr_dsh(event, context):
         # Set time range and title in the template
         # Set time range in the template
         json_template['time']['from'] = first_ts_str
-        json_template['time']['to'] = (first_ts + datetime.timedelta(hours=1)).strftime('%Y_%m_%dT%H:%M:%S.000Z')
+        json_template['time']['to'] = (first_ts + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
         #json_template['time']['from'] = json_date + 'T09:00:00.000Z'
         #json_template['time']['to'] = json_date + 'T09:59:59.000Z'
         json_template['title'] = 'SW Grid Base Line - VT&D - Bus B ' + json_date
