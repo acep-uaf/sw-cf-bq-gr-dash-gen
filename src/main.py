@@ -36,7 +36,11 @@ def mk_gr_dsh(event, context):
         query = f"""
         WITH time_series AS (
         SELECT TIMESTAMP_TRUNC(t, HOUR) as ts_datetime
-        FROM UNNEST(GENERATE_TIMESTAMP_ARRAY((SELECT MIN(TIMESTAMP(datetime)) FROM `acep-ext-eielson-2021.2022_11_11.vtndpp`), (SELECT MAX(TIMESTAMP(datetime)) FROM `acep-ext-eielson-2021.2022_11_11.vtndpp`), INTERVAL 1 HOUR)) t
+        FROM UNNEST(GENERATE_TIMESTAMP_ARRAY(
+            (SELECT MIN(TIMESTAMP(datetime)) FROM `{bigquery_uri}`), 
+            (SELECT MAX(TIMESTAMP(datetime)) FROM `{bigquery_uri}`), 
+            INTERVAL 1 HOUR)
+        ) t
         ),
         data AS (
         SELECT
@@ -86,62 +90,59 @@ def mk_gr_dsh(event, context):
             COUNTIF(measurement_name = 'DT3-B_VA_C') AS DT3_B_VA_C_count,
             COUNTIF(measurement_name = 'DT1-B_W_Total') AS DT1_B_W_Total_count,
             COUNTIF(measurement_name = 'DT2-B_W_Total') AS DT2_B_W_Total_count,
-            COUNTIF(measurement_name = 'DT3-B_W_Total') AS DT3_B_W_Total_count
-
-            
-            
-        FROM `acep-ext-eielson-2021.2022_11_11.vtndpp`
+            COUNTIF(measurement_name = 'DT3-B_W_Total') AS DT3_B_W_Total_count  
+        FROM `{bigquery_uri}`
         GROUP BY 1
         )
         SELECT *
         FROM time_series ts
         LEFT JOIN data d
-        ON ts.ts_datetime = d.data_datetime
+            ON ts.ts_datetime = d.data_datetime
         WHERE DT1_B_VAB_count >= 3000
-        AND DT1_B_VBC_count >= 3000
-        AND DT1_B_VCA_count >= 3000
-        AND DT2_B_VAB_count >= 3000
-        AND DT2_B_VBC_count >= 3000
-        AND DT2_B_VCA_count >= 3000
-        AND DT3_B_VAB_count >= 3000
-        AND DT3_B_VBC_count >= 3000
-        AND DT3_B_VCA_count >= 3000
-        AND GVEA_B_VAB_count >= 3000
-        AND GVEA_B_VBC_count >= 3000
-        AND GVEA_B_VCA_count >= 3000
-        AND G3_B_VAB_count >= 3000
-        AND G3_B_VBC_count >= 3000
-        AND G3_B_VCA_count >= 3000
-        AND G5_B_VAB_count >= 3000
-        AND G5_B_VBC_count >= 3000
-        AND G5_B_VCA_count >= 3000
-        AND GVEA_B_Frequency_count >= 3000
-        AND DT1_B_IA_count >= 3000
-        AND DT1_B_IB_count >= 3000
-        AND DT1_B_IC_count >= 3000
-        AND DT2_B_IA_count >= 3000
-        AND DT2_B_IB_count >= 3000
-        AND DT2_B_IC_count >= 3000
-        AND DT3_B_IA_count >= 3000
-        AND DT3_B_IB_count >= 3000
-        AND DT3_B_IC_count >= 3000
-        AND GVEA_B_IA_count >= 3000
-        AND GVEA_B_IB_count >= 3000
-        AND GVEA_B_IC_count >= 3000
-        AND G3_B_IA_count >= 3000
-        AND G3_B_IB_count >= 3000
-        AND G3_B_IC_count >= 3000
-        AND G5_B_IA_count >= 3000
-        AND G5_B_IB_count >= 3000
-        AND G5_B_IC_count >= 3000
-        AND DT1_B_VA_A_count >= 800
-        AND DT1_B_VA_C_count >= 800 
-        AND DT2_B_VA_A_count >= 800
-        AND DT2_B_VA_C_count >= 800
-        AND DT3_B_VA_A_count >= 800
-        AND DT3_B_VA_C_count >= 800
-        AND DT1_B_W_Total_count >= 800
-        AND DT2_B_W_Total_count >= 800
+            AND DT1_B_VBC_count >= 3000
+            AND DT1_B_VCA_count >= 3000
+            AND DT2_B_VAB_count >= 3000
+            AND DT2_B_VBC_count >= 3000
+            AND DT2_B_VCA_count >= 3000
+            AND DT3_B_VAB_count >= 3000
+            AND DT3_B_VBC_count >= 3000
+            AND DT3_B_VCA_count >= 3000
+            AND GVEA_B_VAB_count >= 3000
+            AND GVEA_B_VBC_count >= 3000
+            AND GVEA_B_VCA_count >= 3000
+            AND G3_B_VAB_count >= 3000
+            AND G3_B_VBC_count >= 3000
+            AND G3_B_VCA_count >= 3000
+            AND G5_B_VAB_count >= 3000
+            AND G5_B_VBC_count >= 3000
+            AND G5_B_VCA_count >= 3000
+            AND GVEA_B_Frequency_count >= 3000
+            AND DT1_B_IA_count >= 3000
+            AND DT1_B_IB_count >= 3000
+            AND DT1_B_IC_count >= 3000
+            AND DT2_B_IA_count >= 3000
+            AND DT2_B_IB_count >= 3000
+            AND DT2_B_IC_count >= 3000
+            AND DT3_B_IA_count >= 3000
+            AND DT3_B_IB_count >= 3000
+            AND DT3_B_IC_count >= 3000
+            AND GVEA_B_IA_count >= 3000
+            AND GVEA_B_IB_count >= 3000
+            AND GVEA_B_IC_count >= 3000
+            AND G3_B_IA_count >= 3000
+            AND G3_B_IB_count >= 3000
+            AND G3_B_IC_count >= 3000
+            AND G5_B_IA_count >= 3000
+            AND G5_B_IB_count >= 3000
+            AND G5_B_IC_count >= 3000
+            AND DT1_B_VA_A_count >= 800
+            AND DT1_B_VA_C_count >= 800 
+            AND DT2_B_VA_A_count >= 800
+            AND DT2_B_VA_C_count >=800
+            AND DT3_B_VA_A_count >=800
+            AND DT3_B_VA_C_count >=800
+            AND DT1_B_W_Total_count >=800
+            AND DT2_B_W_Total_count >=800
         ORDER BY ts.ts_datetime ASC
         LIMIT 5
         """
