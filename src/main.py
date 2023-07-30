@@ -148,6 +148,7 @@ def mk_gr_dsh(event, context):
         """
         # Run the query
         query_job = client.query(query)
+        
         #query_job.result()  # Wait for the job to finish
         result = query_job.result()  # Wait for the job to finish
 
@@ -184,20 +185,15 @@ def mk_gr_dsh(event, context):
         json_date = dataset_id.replace("_", "-") # 'yyyy-mm-dd' format
         
         # Set time range and title in the template
-        # Set time range in the template
         json_template['time']['from'] = first_ts_str
         json_template['time']['to'] = (first_ts + timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
-        #json_template['time']['from'] = json_date + 'T09:00:00.000Z'
-        #json_template['time']['to'] = json_date + 'T09:59:59.000Z'
         json_template['title'] = 'SW Grid Base Line - VT&D - Bus B ' + json_date
 
         # write the updated JSON to a new Cloud Storage bucket
         archive_bucket = storage_client.get_bucket(os.getenv('ARCHIVE_BUCKET'))
         print(f'archive bucket: {archive_bucket}')
-        archive_blob = archive_bucket.blob(dataset_id + '.json')  # used a new variable name
-        archive_blob.upload_from_string(json.dumps(json_template, indent=4))  # used the new variable
-
-
+        archive_blob = archive_bucket.blob(dataset_id + '.json')  
+        archive_blob.upload_from_string(json.dumps(json_template, indent=4))  
 
     except Forbidden as e:
         print(f'Forbidden error occurred: {str(e)}. Please check the Cloud Function has necessary permissions.')
