@@ -7,4 +7,4 @@ gcloud functions deploy sw-cw-bq-gr-dash-gen \
   --memory 16384MB \
   --timeout 540s  \
   --trigger-topic sw-cf-bq-pp-gr \
-  --set-env-vars TEMPLATE_BUCKET=sw-eielson-dash-template,TEMPLATE_JSON=sw-bq-grafana-template-b.json,ARCHIVE_BUCKET=sw-eielson-dash-archive
+  --set-env-vars TEMPLATE_BUCKET=sw-eielson-dash-template,TEMPLATE_JSON=sw-bq-grafana-template-b.json,ARCHIVE_BUCKET=sw-eielson-dash-archive,PUBSUB_TOPIC=sw-cf-gr-ld
