@@ -1,7 +1,6 @@
 from google.api_core.exceptions import Forbidden, BadRequest, GoogleAPICallError
-from google.cloud import bigquery, storage
-#import datetime
-from datetime import datetime, timedelta
+from google.cloud import bigquery, storage, pubsub_v1
+from datetime import timedelta
 
 import base64
 import json
@@ -193,7 +192,23 @@ def mk_gr_dsh(event, context):
         archive_bucket = storage_client.get_bucket(os.getenv('ARCHIVE_BUCKET'))
         print(f'archive bucket: {archive_bucket}')
         archive_blob = archive_bucket.blob(dataset_id + '_SW_Grid_Base_Line_VTND_Bus_B.json')  
-        archive_blob.upload_from_string(json.dumps(json_template, indent=4))  
+        archive_blob.upload_from_string(json.dumps(json_template, indent=4)) 
+
+        # Run the query
+        query_job = client.query(query)
+        query_job.result()  # Wait for the job to finish
+
+        # Code to publish to PubSub Topic
+        pubsub_topic = os.getenv('PUBSUB_TOPIC')
+        publisher = pubsub_v1.PublisherClient()
+        topic_path = publisher.topic_path(project_id, pubsub_topic)  # Use the variable here
+
+        message = {
+            'project_id': project_id,
+        }
+        
+        publish_message = publisher.publish(topic_path, json.dumps(message).encode('utf-8'))
+        publish_message.result() 
 
     except Forbidden as e:
         print(f'Forbidden error occurred: {str(e)}. Please check the Cloud Function has necessary permissions.')
