@@ -182,6 +182,7 @@ def mk_gr_dsh(event, context):
                     target['rawSql'] = target['rawSql'].replace('dataset_id_place_holder', dataset_id)
 
         json_date = dataset_id.replace("_", "-") # 'yyyy-mm-dd' format
+        dash_id = dataset_id + '_SW_Grid_Base_Line_VTND_Bus_B.json'
         
         # Set time range and title in the template
         json_template['time']['from'] = first_ts_str
@@ -191,7 +192,8 @@ def mk_gr_dsh(event, context):
         # write the updated JSON to a new Cloud Storage bucket
         archive_bucket = storage_client.get_bucket(os.getenv('ARCHIVE_BUCKET'))
         print(f'archive bucket: {archive_bucket}')
-        archive_blob = archive_bucket.blob(dataset_id + '_SW_Grid_Base_Line_VTND_Bus_B.json')  
+        #archive_blob = archive_bucket.blob(dataset_id + '_SW_Grid_Base_Line_VTND_Bus_B.json') 
+        archive_blob = archive_bucket.blob(dash_id) 
         archive_blob.upload_from_string(json.dumps(json_template, indent=4)) 
 
         # Run the query
@@ -205,6 +207,8 @@ def mk_gr_dsh(event, context):
 
         message = {
             'project_id': project_id,
+            'archive_bucket' : archive_bucket.name,
+            'dash_id' : dash_id
         }
         
         publish_message = publisher.publish(topic_path, json.dumps(message).encode('utf-8'))
