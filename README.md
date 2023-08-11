@@ -39,5 +39,5 @@ The function relies on the following packages, as outlined in the `requirements.
 - google-cloud-storage
 
 ## Conclusion
-The sw-cw-bq-gr-dash-gen is a sophisticated Cloud Function tailored to interact with various Google Cloud Services. It successfully extracts, transforms, and loads data into a dashboard template, providing valuable insights through an automated, scalable, and robust solution.
+sw-cw-bq-gr-dash-gen is a sophisticated Cloud Function tailored to interact with various Google Cloud Services. It successfully extracts, transforms, and loads data into a dashboard template, providing valuable insights through an automated, scalable, and robust solution.
 
