@@ -1,10 +1,17 @@
+#!/bin/bash
+
+# Source the .env file
+source eiedeploy.env
+
+# Deploy the function
 gcloud functions deploy sw-cw-bq-gr-dash-gen \
-  --gen2 \
-  --runtime=python311 \
-  --region=us-west1 \
-  --source=src \
-  --entry-point=mk_gr_dsh \
-  --memory 16384MB \
-  --timeout 540s  \
-  --trigger-topic sw-cf-bq-pp-gr \
-  --set-env-vars TEMPLATE_BUCKET=sw-eielson-dash-template,TEMPLATE_JSON=sw-bq-grafana-template-b.json,ARCHIVE_BUCKET=sw-eielson-dash-archive,PUBSUB_TOPIC=sw-cf-gr-ld
+   --$GEN2 \
+   --runtime=$RUNTIME \
+   --region=$REGION \
+   --source=$SOURCE \
+   --entry-point=$ENTRY_POINT \
+   --memory=$MEMORY \
+   --timeout=$TIMEOUT  \
+   --trigger-topic=$TRIGGER_TOPIC \
+   --set-env-vars TEMPLATE_BUCKET=$TEMPLATE_BUCKET,TEMPLATE_JSON=$TEMPLATE_JSON,ARCHIVE_BUCKET=$ARCHIVE_BUCKET,PUBSUB_TOPIC=$PUBSUB_TOPIC
+
