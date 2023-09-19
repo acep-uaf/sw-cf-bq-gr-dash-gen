@@ -122,14 +122,11 @@ Below are descriptions for each environment variable used in the deployment scri
 
 Set each `<value>` in the `eiedeploy.env` file appropriately before deploying the Cloud Function. **Note:** For security reasons, do not cheeck the `eiedeploy.env` with values     set  into a public repository such as github.
 
-
-
-
-
 ## Dependencies
 The function relies on the following packages, as outlined in the `requirements.txt` file:
 - google-cloud-bigquery
 - google-cloud-storage
+- google-cloud-pubsub
 
 ## Conclusion
 sw-cw-bq-gr-dash-gen is a sophisticated Cloud Function tailored to interact with various Google Cloud Services. It successfully extracts, transforms, and loads data into a dashboard template, providing valuable insights through an automated, scalable, and robust solution.
