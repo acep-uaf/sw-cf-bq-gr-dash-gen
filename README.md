@@ -30,7 +30,7 @@ After modifying the JSON template, it's written back to a new Cloud Storage buck
 ## Exception Handling
 The function includes a robust exception handling mechanism, capturing specific exceptions like `Forbidden`, `BadRequest`, and `GoogleAPICallError`, as well as handling any unexpected errors. Each of these is logged with a descriptive message to facilitate debugging.
 
- ### Deployment
+### Deployment
  
  Deploy the Cloud Function with the provided shell script:
  
