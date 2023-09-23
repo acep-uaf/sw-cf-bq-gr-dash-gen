@@ -4,7 +4,7 @@ The sw-cw-bq-gr-dash-gen is a Cloud Function meticulously designed to create a d
 
 ## Cloud Function
 ### Description
-The gen 2 Cloud Function mk_gr_dsh is a Python function implemented with Python 3.11 runtime. It leverages the `google.cloud.bigquery` and `google.cloud.storage` libraries to interact with Google's BigQuery service and Cloud Storage, respectively. The function is triggered by an event from a Pub/Sub topic.
+The gen 2 Cloud Function `mk_gr_dsh` is a Python function implemented with Python 3.11 runtime. It leverages the `google.cloud.bigquery` and `google.cloud.storage` libraries to interact with Google's BigQuery service and Cloud Storage, respectively. The function is triggered by an event from a Pub/Sub topic.
 
 ## Event Handling
 Upon receiving the event, the function extracts and decodes the base64-encoded data from the event payload, converting it into a JSON string. It then maps this JSON into a dictionary, which allows it to fetch vital information like the `project_id`, `dataset_id`, and `table_id`. If any of these crucial parameters are missing, the function will halt, printing an error message.
