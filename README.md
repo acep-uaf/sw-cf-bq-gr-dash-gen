@@ -112,7 +112,7 @@ Below are descriptions for each environment variable used in the deployment scri
   - Description: Specifies the Cloud Storage bucket where the JSON template file for the dashboard is stored.
   
 - **TEMPLATE_JSON**=`<value>`:
-  - Description: The name of the JSON template file in the TEMPLATE_BUCKET to be used for the dashboard.
+  - Description: The name of the JSON template file in the `TEMPLATE_BUCKET` to be used for the dashboard.
   
 - **ARCHIVE_BUCKET**=`<value>`:
   - Description: Specifies the Cloud Storage bucket where the updated JSON file (serving as an archive) is written after processing.
