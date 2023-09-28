@@ -1,6 +1,13 @@
 # SW-CW-BQ-GR-DASH-GEN Cloud Function
 
-The sw-cw-bq-gr-dash-gen is a Cloud Function meticulously designed to create a dashboard by executing a series of BigQuery queries. This complex operation involves querying time-series data with conditional count logic, manipulating data, and rendering it in a pre-defined template for visualization. It also utilizes BigQuery and Cloud Storage services, providing an end-to-end solution for dashboard generation.
+<br>
+
+Introducing the `sw-cf-bq-gr-dash-gen` repository. As a part of the ACEP SW Data Pipeline, it automates the retrieval and population of the Grafana dashboard template with the most recent data metrics from BigQuery.
+
+For a panoramic view of the entire pipeline system and this repository's interaction within, please refer to the [ACEP SW Data Pipeline Overview](https://github.com/acep-uaf/sw-stack) repository.
+
+
+The `sw-cw-bq-gr-dash-gen` Cloud Function is designed to create a dashboard by executing a series of BigQuery queries. This complex operation involves querying time-series data with conditional count logic, manipulating data, and rendering it in a pre-defined template for visualization. It also utilizes BigQuery and Cloud Storage services, providing an end-to-end solution for dashboard generation.
 
 ## Cloud Function
 ### Description
