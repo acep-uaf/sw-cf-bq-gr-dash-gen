@@ -135,6 +135,17 @@ The function relies on the following packages, as outlined in the `requirements.
 - google-cloud-storage
 - google-cloud-pubsub
 
+---
+
 ## Conclusion
-sw-cw-bq-gr-dash-gen is a sophisticated Cloud Function tailored to interact with various Google Cloud Services. It successfully extracts, transforms, and loads data into a dashboard template, providing valuable insights through an automated, scalable, and robust solution.
+
+The `sw-cf-bq-gr-dash-gen` repository is an essential cog in the machinery of the [ACEP SW Data Pipeline](https://github.com/acep-uaf/sw-stack). Conceived as a Cloud Function authored in Python, its principal mission is automating the creation of Grafana dashboards, fueled by the freshest data metrics sourced from BigQuery.
+
+Harnessing the collective prowess of Google BigQuery, Cloud Storage, and Pub/Sub, this repository is a testament to seamless integration, dynamically populating dashboard templates in response to Pub/Sub messages. The advanced querying, intricate data manipulation, and systematic archiving capabilities this Cloud Function boasts, greatly enhances the visualization process, ensuring stakeholders are presented with the most insightful and up-to-date data representations.
+
+We cordially invite the open-source community to delve into the depths of this repository, grasp its functionalities, and perhaps contribute to its enhancement. For a comprehensive understanding of licensing, we direct you to the [LICENSE](https://github.com/acep-uaf/sw-cf-bq-gr-dash-gen/blob/main/LICENSE) file in the repository's root.
+
+Your exploration and engagement with this solution are highly valued. We're optimistic that integrating this functionality will vastly enrich your data transformation processes within the Google Cloud Platform.
+
+
 
